@@ -21,16 +21,16 @@ Luego, el conjunto de píxeles `{(xi,yi),i= 0, 1 ,...,}` que forman una línea c
 ```
 x cosθ + y sinθ = r
 ```
-donde `θ` es elángulo que forma el vector normal de la recta con el eje `x`, y `r` es la distancia perpendicular de la recta a la línea que pasa por el origen.
+donde `θ` es el ángulo que forma el vector normal de la recta con el eje `x`, y `r` es la distancia perpendicular de la recta a la línea que pasa por el origen.
 
 
 Luego, para una imagen de N × N píxeles, se podría elegir la siguiente discretización del espacio paramétrico:
 
 ```c
-θi = i × ∆θ, con ∆θ = π/M // donde M representa el número deángulos
+θi = i × ∆θ, con ∆θ = π/M     // donde M representa el número deángulos
 ```
 ```c
-rj = j × ∆r, con ∆r = N * √2/(2R) // donde R representa el número de desplazamientos..
+rj = j × ∆r, con ∆r = N * √2/(2R)    // donde R representa el número de desplazamientos..
 ```
 
 Un ejemplo concreto de discretización podría ser elegir `M = 180`, y `R=1000`. Luego, el espacio parámetro, o espacio de Hough sería una matriz de M × R entradas.
@@ -44,7 +44,7 @@ Habiendo elegido el espacio de parámetros y su discretización, el algortimo co
 2   if (x,y) is edge {
 3       for each theta_i {
 4           r_j = x cos(theta_i) + y sin(theta_i)
-            5 H(theta_i, r_j) = H(theta_i, r_j) + 1
+5           H(theta_i, r_j) = H(theta_i, r_j) + 1
 6        }
 7   }
 8 }
