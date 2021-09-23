@@ -30,7 +30,7 @@ SOURCES := $(wildcard $(SRC)/*.c)
 OBJECTS := $(patsubst $(SRC)/%.c, $(SRC)/%.o, $(SOURCES))
 .SILENT: all $(EXECUTABLE_NAME) $(SRC)/%.o clean $(CC) make $(SOURCES) $(OBJECTS)
 
-all: $(EXECUTABLE_NAME)
+all: clean $(EXECUTABLE_NAME)
 	@echo "$(PUR_COLOR)Ejecutable generado!$(NO_COLOR) Nombre: $(OK_COLOR)$(EXECUTABLE_NAME)$(NO_COLOR) "
 
 $(EXECUTABLE_NAME): $(OBJECTS)

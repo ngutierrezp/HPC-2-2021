@@ -1,61 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <curses.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "../incl/read.h"
+#include "../incl/colors.h"
 
-void read_image(char *PATH)
+int **read_image(char *PATH_FILE, int M, int N)
 {
-    FILE *image_raw;
+
+    int size = N * M, file, value;
+    int *buffer = (int *)malloc(sizeof(int) * size), **matriz = (int**)malloc(sizeof(int*)*N);
+
+    file = open(PATH_FILE, O_RDONLY);
+    if (file == -1)
+    {
+        fprintf(stderr, RED "[ERROR]" reset "  No se ha podido abrir el archivo. Verifique el nombre del archivo \n");
+        exit(EXIT_FAILURE);
+    }
+
+    read(file, buffer, sizeof(int) * size);
+
+    close(file);
+
+    for (int i = 0; i < N; i++)
+    {
+        matriz[i] = (int*)malloc(sizeof(int) * M);
+    }
     
-    int **matriz_image, test;
-
-    int i, j, rows, colums;
-
-    //i read dimension image
-
-     sscanf(PATH,"%*[^-]-%dx%d",
-                &rows,
-                &colums);
-
-    printf("size image : [X:%d , Y:%d]\n",rows,colums);
-
-    //i create dinamic rows
-    matriz_image = (int **)malloc(rows * sizeof(int *));
-
-    //i create dinamic colums
-    for (i = 0; i < rows; i++)
+    value = 0;
+    for (int i = 0; i < N; i++)
     {
-
-        matriz_image[i] = (int *)malloc(colums * sizeof(int));
-    }
-
-    //i open image raw
-    image_raw = fopen(PATH, "rb");
-
-    //i copy values to matriz_image
-    for (i = 0; i < rows; i++)
-    {
-        for (j = 0; j < colums; j++)
+        for (int j = 0; j < M; j++)
         {
-
-            
-            fscanf(image_raw, "%d", &test);
-            *(*(matriz_image + i) + j) = test;
-            
+            matriz[i][j] = (int)buffer[value];
+            value++;
         }
-    }
-    printf("imprimiendo matriz.... \n");
-    //i print matriz
-    for (i = 0; i < rows; i++)
-    {
-        for (j = 0; j < colums; j++)
-        {
-            
-            printf("%d ", *(*(matriz_image + i) + j));
-            
-        }
-        printf("\n");
+        
+        
     }
 
-
+    return matriz;
 }
