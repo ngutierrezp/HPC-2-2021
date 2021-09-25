@@ -25,9 +25,9 @@ int ** hough_transform(int **matriz, int N, int M, int T, int R)
     }
     
     // Transformada de Hogh
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        for (int j = 0; j < M; j++)
+        for (int j = 0; j < N; j++)
         {
             if (matriz[i][j] != 0)
             {
