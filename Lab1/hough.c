@@ -6,10 +6,11 @@
 #include "./incl/read.h"
 #include "./incl/constants.h"
 #include "./incl/colors.h"
+#include "./incl/transform.h"
 
 int main(int argc, char *argv[])
 {
-    int M = 0, N = 0, T = 0, R = 0, U = 0, opt;
+    int M = 0, N = 0, T = 0, R = 0, U = 0, opt, **H_matrix, **matrix;
     char *I = (char *)malloc(sizeof(char) * _MAX_STRING_SIZE), *O = (char *)malloc(sizeof(char) * _MAX_STRING_SIZE);
 
     // en caso de que no existan todos los argumentos
@@ -60,17 +61,22 @@ int main(int argc, char *argv[])
         }
     }
 
-    int **matrix = read_image(I, M, N);
-    
+    matrix = read_image(I, M, N);
+    printf("Caso1: \n");
+    H_matrix = hough_transform(matrix,N,M,T,R);
+    printf("Caso2: \n");
+    umbralization(H_matrix,T,R,U);
+    printf("Caso3: \n");
+    write_image(H_matrix,O,T,R);
 
 
     free(I);
     free(O);
-    for (int i = 0; i < N; i++)
-    {
-        free(matrix[i]);
-    }
     free(matrix);
+    free(H_matrix);
+
+
+    printf("Ejecutado correctamente...\n");
 
     return 0;
 }

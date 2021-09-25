@@ -2,7 +2,7 @@
 
 
 CC=gcc
-CCFLAGS=-Wall
+CCFLAGS=-Wall -lm
 SRC=src
 INCL=incl
 EXECUTABLE_NAME=hough
@@ -35,11 +35,11 @@ all: clean $(EXECUTABLE_NAME)
 
 $(EXECUTABLE_NAME): $(OBJECTS)
 	@echo "Generando ejecutable ..."
-	$(CC) -o $@ $^ hough.c $(LDFLAGS) 
+	$(CC) -o $@ $^ hough.c  $(CCFLAGS)  
 
 $(SRC)/%.o: $(SRC)/%.c $(INCL)/%.h
 	@echo "Generando archivos object de $@ ...."
-	($(CC) -lm -I$(SRC) -c $< -o $@ && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
+	($(CC)  -I$(SRC) -c $< -o $@ $(CCFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
 		||  (echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR)" && exit 1; )
 clean:
 	@echo "Eliminado $(WARN_COLOR).o $(NO_COLOR)y $(WARN_COLOR)$(EXECUTABLE_NAME) $(NO_COLOR) antiguos..."
