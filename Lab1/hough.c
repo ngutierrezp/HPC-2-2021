@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
     matrix = read_image(I, M, N);
     printf("Caso1: \n");
-    H_matrix = hough_transform(matrix,N,M,T,R);
+    H_matrix = SIMD_hough_transform(matrix,N,M,T,R);
     printf("Caso2: \n");
     umbralization(H_matrix,T,R,U);
     printf("Caso3: \n");
