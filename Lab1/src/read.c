@@ -55,6 +55,7 @@ void write_image(int **matriz, char *OUTPUT_PATH, int T, int R)
         }
             
     }
+    
 
     file = open(OUTPUT_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
