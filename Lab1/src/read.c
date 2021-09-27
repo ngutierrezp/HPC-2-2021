@@ -70,6 +70,22 @@ void write_image(int **matriz, char *OUTPUT_PATH, int T, int R)
     close(file);
    
     free(buffer);
-   
+}
 
+void print_line_hough(int** H, int T, int R)
+{
+    printf("\n\t| Theta | R |\n");
+    for (int i = 0; i < T; i++)
+    {
+        for (int j = 0; j < R; j++)
+        {
+            if (H[i][j] > 0)
+            {
+                printf("\t  %i    %i \n",i,j);
+            }
+            
+        }
+        
+    }
+    
 }

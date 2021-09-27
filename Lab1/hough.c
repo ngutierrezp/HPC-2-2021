@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
+#include <math.h>
+#include <time.h>
 #include "./incl/read.h"
 #include "./incl/constants.h"
 #include "./incl/colors.h"
@@ -10,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    int M = 0, N = 0, T = 0, R = 0, U = 0, opt, **H_matrix, **matrix;
+    int M = 0, N = 0, T = 0, R = 0, U = 0, opt, offset, **H_matrix, **matrix, **SIMD_matriz;
     char *I = (char *)malloc(sizeof(char) * _MAX_STRING_SIZE), *O = (char *)malloc(sizeof(char) * _MAX_STRING_SIZE);
 
     // en caso de que no existan todos los argumentos
@@ -61,22 +63,55 @@ int main(int argc, char *argv[])
         }
     }
 
+    //lectura de imagen
     matrix = read_image(I, M, N);
-    printf("Caso1: \n");
-    H_matrix = SIMD_hough_transform(matrix,N,M,T,R);
-    printf("Caso2: \n");
-    umbralization(H_matrix,T,R,U);
-    printf("Caso3: \n");
-    write_image(H_matrix,O,T,R);
 
+    //############ Segmento SECUENCIAL ############
+
+    //ajuste de desplazamiento de la imagen
+    offset = R / 2;
+
+    // Transformada de Hough secuencial
+    clock_t begin = clock();
+    H_matrix = hough_transform(matrix, N, M, T, R, offset);
+    clock_t end = clock();
+    double time_secuential = (double)(end - begin) / CLOCKS_PER_SEC;
+
+    // Umbralización
+    umbralization(H_matrix, T, R, U);
+
+    // Escritura la transformada secuencial
+    write_image(H_matrix, O, T, R);
+
+    //############ Segmento PARALELO ############
+
+    //Transformada de Hough paralela
+    clock_t SIMD_begin = clock();
+    SIMD_matriz = SIMD_hough_transform(matrix, N, M, T, R, offset);
+    clock_t SIMD_end = clock();
+    double time_parallel = (double)(SIMD_end - SIMD_begin) / CLOCKS_PER_SEC;
+
+    // Umbralización
+    umbralization(SIMD_matriz, T, R, U);
+
+    // Escritura la transformada paralela
+    char out[_MAX_STRING_SIZE] = "SIMD_";
+    strcat(out, O);
+    write_image(SIMD_matriz, out, T, R);
+
+    print_line_hough(H_matrix,T,R);
+
+    
+    printf("\n\n");
+    printf("Tiempo de de ejecución de Hough secuencial \t:"GRN" %f seg."reset" \n",time_secuential);
+    printf("Tiempo de de ejecución de Hough paralelo \t:"GRN" %f seg."reset" \n",time_parallel);
+    printf("Ejecutado correctamente. Se han generado dos archivos :"YEL" %s "reset"y "YEL"%s.\n",O,out);
 
     free(I);
     free(O);
     free(matrix);
     free(H_matrix);
-
-
-    printf("Ejecutado correctamente...\n");
+    free(SIMD_matriz);
 
     return 0;
 }
