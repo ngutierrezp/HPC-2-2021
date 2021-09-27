@@ -1,5 +1,10 @@
 # Lab 1 : HPC
 
+Realizado por : 
+        - Isidora Abasolo
+        - Nicolás Gutiérrez
+
+
 En este primer laboratorio se verá SIMD- SSE y la transformada de Hough.
 
 ## 1 Objetivo

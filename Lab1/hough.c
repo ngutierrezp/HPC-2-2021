@@ -1,3 +1,9 @@
+/*
+    Integrantes:
+        - Isidora Abasolo
+        - Nicolás Gutiérrez
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
