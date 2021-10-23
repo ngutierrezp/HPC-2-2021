@@ -3,11 +3,12 @@
 
 CC=gcc
 NCC=nvcc
-CCFLAGS=-Wall -lm -fopenmp 
-CUDAFLAGS=-arch=sm_5
+CCFLAGS=-Wall -lm -fopenmp
+CUDAFLAGS= -lcuda
 SRC=src
 INCL=incl
 CUDAINCL=/usr/local/cuda/include
+CUDAINCL64=/usr/local/cuda/lib64
 EXECUTABLE_NAME=hist
 COMPILED=false
 
@@ -30,9 +31,9 @@ PUR_COLOR := \033[0;35m
 # instancia de compilación
 
 
-SOURCES := $(wildcard $(SRC)/*.c)
-OBJECTS := $(patsubst $(SRC)/%.c, $(SRC)/%.o, $(SOURCES))
-.SILENT: all  $(SRC)/%.o clean $(CC) make $(SOURCES) $(OBJECTS) $(EXECUTABLE_NAME).o
+SOURCES := $(wildcard $(SRC)/*.cu)
+OBJECTS := $(patsubst $(SRC)/%.cu, $(SRC)/%.o, $(SOURCES))
+.SILENT: all  $(SRC)/%.o clean $(NCC) make $(SOURCES) $(OBJECTS) $(EXECUTABLE_NAME).o
 .PHONY: $(EXECUTABLE_NAME)
 
 all: $(EXECUTABLE_NAME)
@@ -47,19 +48,19 @@ $(EXECUTABLE_NAME): $(OBJECTS) $(EXECUTABLE_NAME).o
 		echo "$(OK_COLOR)**************************************************$(NO_COLOR)";\
 	else\
 		echo "Generando ejecutable ...";\
-		$(CC) -o $@ $^ $(CCFLAGS) -L./incl -I/usr/local/cuda/include  ;\
+		$(NCC) -o $@ $^ $(CUDAFLAGS) -I$(INCL) -I$(CUDAINCL) -I$(CUDAINCL64)   ;\
 	fi
 
 $(EXECUTABLE_NAME).o: $(EXECUTABLE_NAME).cu
 	@echo "Generando archivos object de $@ ...."
-	($(NCC)  -I$(CUDAINCL) -c $(EXECUTABLE_NAME).cu  -o $@ $(CUDAFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
+	($(NCC)  -I$(CUDAINCL) -I$(INCL) -I$(CUDAINCL64) -c $(EXECUTABLE_NAME).cu  -o $@ $(CUDAFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
 		||  (echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR)" && exit 1; )
 	$(eval COMPILED=true)
 	
 
-$(SRC)/%.o: $(SRC)/%.c $(INCL)/%.h
+$(SRC)/%.o: $(SRC)/%.cu $(INCL)/%.h
 	@echo "Generando archivos object de $@ ...."
-	($(CC)  -I$(SRC) -c $< -o $@ $(CCFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
+	($(NCC)  -I$(INCL) -c $< -o $@ $(CUDAFLAGS) -I$(CUDAINCL64) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
 		||  (echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR)" && exit 1; )
 	$(eval COMPILED=true)
 clean:

@@ -8,23 +8,23 @@
 #include "./incl/colors.h"
 #include "./incl/constants.h"
 #include <cuda_runtime_api.h>
-#include "device_launch_parameters.h"
+#include <device_launch_parameters.h>
 
 // Función de suma en cuda con operación atomica.
-__global__ void histogram(unsigned short int *I, int n, int m, unsigned short int *H, int Q)
-{
-    int id = blockIdx.x * blockDim.x + threadIdx.x;
+// __global__ void histogram(unsigned short int *I, int n, int m, unsigned short int *H, int Q)
+// {
+//     int id = blockIdx.x * blockDim.x + threadIdx.x;
 
-    unsigned short int value = H[id];
+//     unsigned short int value = H[id];
 
-    if (id < n*m)
-    {
-        if(value < Q)
-        {
-            atomicAdd(&H[value], 1);
-        }
-    }
-}
+//     if (id < n*m)
+//     {
+//         if(value < Q)
+//         {
+//             atomicAdd(&H[value], 1);
+//         }
+//     }
+// }
 
 // Función de suma en cuda con operación atomica con memoria compartida.
 // __global__ void histogram_shared(unsigned short int *I, int n, int m, unsigned short int *H, int Q)
@@ -109,39 +109,53 @@ int main(int argc, char *argv[])
         printf("\n\n");
     }
 
+    
+
  
 
-    // Se lee la imagen de entrada con la función read_raw()
-    unsigned short int *histo_cuda;
-    unsigned short int *image_cuda;
+    // // Se lee la imagen de entrada con la función read_raw()
+    // unsigned short int *histo_cuda;
+    // unsigned short int *image_cuda;
     
     unsigned short int *image = read_raw(i, m, n);
-    unsigned short int *histo = (unsigned short int *)malloc(sizeof(unsigned short int) * Q);
+    // unsigned short int *histo = (unsigned short int *)malloc(sizeof(unsigned short int) * Q);
 
-    cudaMalloc((void **)&histo_cuda, Q * sizeof(unsigned short int));
-    cudaMalloc((void **)&image_cuda, m * n * sizeof(unsigned short int));
-
-    // Se copia la imagen de entrada a la memoria en cuda.
-    cudaMemcpy(image_cuda, image, m * n * sizeof(unsigned short int), cudaMemcpyHostToDevice);
-    // Se copia la memoria de hisograma a la memoria en cuda.
-    cudaMemcpy(histo_cuda, histo, Q * sizeof(unsigned short int), cudaMemcpyHostToDevice);
-
-    // Se llama el kernel de histograma con operación atomica.
-    histogram<<<(m * n) / t, t>>>(image_cuda, m, n, histo_cuda, Q);
-
-    // Se copia la memoria de histograma a la memoria en host.
-    cudaMemcpy(histo, histo_cuda, Q * sizeof(unsigned short int), cudaMemcpyDeviceToHost);
-
-    // Print de histograma en host.
+    // Se imprime el contenido de la imagen de entrada con un for.
     if (debug)
     {
-        printf(GRN "Histograma en host:\n" reset);
-        for (int i = 0; i < Q; i++)
+        printf(GRN "Imagen de entrada:\n" reset);
+        for (int i = 0; i < m * n; i++)
         {
-            printf("%d: %d\n", i, histo[i]);
+            printf("%d \n", image[i]);
         }
         printf("\n\n");
     }
+
+
+    // cudaMalloc((void **)&histo_cuda, Q * sizeof(unsigned short int));
+    // cudaMalloc((void **)&image_cuda, m * n * sizeof(unsigned short int));
+
+    // // Se copia la imagen de entrada a la memoria en cuda.
+    // cudaMemcpy(image_cuda, image, m * n * sizeof(unsigned short int), cudaMemcpyHostToDevice);
+    // // Se copia la memoria de hisograma a la memoria en cuda.
+    // cudaMemcpy(histo_cuda, histo, Q * sizeof(unsigned short int), cudaMemcpyHostToDevice);
+
+    // // Se llama el kernel de histograma con operación atomica.
+    // histogram<<<(m * n) / t, t>>>(image_cuda, m, n, histo_cuda, Q);
+
+    // // Se copia la memoria de histograma a la memoria en host.
+    // cudaMemcpy(histo, histo_cuda, Q * sizeof(unsigned short int), cudaMemcpyDeviceToHost);
+
+    // // Print de histograma en host.
+    // if (debug)
+    // {
+    //     printf(GRN "Histograma en host:\n" reset);
+    //     for (int i = 0; i < Q; i++)
+    //     {
+    //         printf("%d: %d\n", i, histo[i]);
+    //     }
+    //     printf("\n\n");
+    // }
 
     // Se escribe el histograma en el archivo de salida.
     // write_raw(o, histo, Q);
@@ -154,9 +168,9 @@ int main(int argc, char *argv[])
     free(i);
     free(o);
     free(image);
-    free(histo);
-    cudaFree(histo_cuda);
-    cudaFree(image_cuda);
+    // free(histo);
+    // cudaFree(histo_cuda);
+    // cudaFree(image_cuda);
 
 
     return 0;
