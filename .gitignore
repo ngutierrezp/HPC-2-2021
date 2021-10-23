@@ -1,5 +1,4 @@
 *.o
-*.raw
 .vscode
 *.zip
 *.txt
