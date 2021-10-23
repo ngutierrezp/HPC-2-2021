@@ -2,9 +2,12 @@
 
 
 CC=gcc
+NCC=nvcc
 CCFLAGS=-Wall -lm -fopenmp 
+CUDAFLAGS=-arch=sm_5
 SRC=src
 INCL=incl
+CUDAINCL=/usr/local/cuda/include
 EXECUTABLE_NAME=hist
 COMPILED=false
 
@@ -37,19 +40,19 @@ all: $(EXECUTABLE_NAME)
 		echo "$(PUR_COLOR)Ejecutable generado!$(NO_COLOR) Nombre: $(OK_COLOR)$(EXECUTABLE_NAME)$(NO_COLOR) ";\
 	fi
 
-$(EXECUTABLE_NAME): $(OBJECTS) $(EXECUTABLE_NAME).o 
+$(EXECUTABLE_NAME): $(OBJECTS) $(EXECUTABLE_NAME).o
 	@if [ $(COMPILED) = false ]; then \
 		echo "$(OK_COLOR)**************************************************$(NO_COLOR)";\
 		echo "$(OK_COLOR)*$(NO_COLOR)  No existen cambios, no se volverá a compilar  $(OK_COLOR)*$(NO_COLOR)";\
 		echo "$(OK_COLOR)**************************************************$(NO_COLOR)";\
 	else\
 		echo "Generando ejecutable ...";\
-		$(CC) -o $@ $^ $(CCFLAGS) -L./incl  ;\
+		$(CC) -o $@ $^ $(CCFLAGS) -L./incl -I/usr/local/cuda/include  ;\
 	fi
 
-$(EXECUTABLE_NAME).o: $(EXECUTABLE_NAME).c
+$(EXECUTABLE_NAME).o: $(EXECUTABLE_NAME).cu
 	@echo "Generando archivos object de $@ ...."
-	($(CC)  -I$(SRC) -c $(EXECUTABLE_NAME).c  -o $@ $(CCFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
+	($(NCC)  -I$(CUDAINCL) -c $(EXECUTABLE_NAME).cu  -o $@ $(CUDAFLAGS) && echo "$(OK_COLOR)[OK]$(NO_COLOR)") \
 		||  (echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR)" && exit 1; )
 	$(eval COMPILED=true)
 	
