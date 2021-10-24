@@ -4,7 +4,7 @@
 CC=gcc
 NCC=nvcc
 CCFLAGS=-Wall -lm -fopenmp
-CUDAFLAGS= -lcuda
+CUDAFLAGS= -lcuda -lcudart
 SRC=src
 INCL=incl
 CUDAINCL=/usr/local/cuda/include

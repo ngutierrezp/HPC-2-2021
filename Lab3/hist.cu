@@ -115,6 +115,13 @@ int main(int argc, char *argv[])
 
     int *image = read_raw(i, m, n); // lectura de la imagen de entrada.
     int *histo = (int *)malloc(sizeof(int) * Q);
+    // Se inicializa el array con 0.
+    for (int i = 0; i < Q; i++)
+    {
+        histo[i] = 0;
+    }
+    
+    
 
     cudaMalloc((void **)&histo_cuda, Q * sizeof(int));
     cudaMalloc((void **)&image_cuda, m * n * sizeof(int));
@@ -125,18 +132,20 @@ int main(int argc, char *argv[])
     cudaMemcpy(histo_cuda, histo, Q * sizeof(int), cudaMemcpyHostToDevice);
 
     // Se llama el kernel de histograma con operación atomica.
-    histogram<<<(m * n) / t, t>>>(image_cuda, m, n, histo_cuda, Q);
-
+    histogram<<<(int)ceil((m * n) / t), t>>>(image_cuda, m, n, histo_cuda, Q);
+    cudaDeviceSynchronize();
     // Se copia la memoria de histograma a la memoria en host.
     cudaMemcpy(histo, histo_cuda, Q * sizeof(int), cudaMemcpyDeviceToHost);
-
+    
+    
     // Print de histograma en host.
     if (debug)
     {
         printf(GRN "Histograma en host:\n" reset);
+        printf("Valor\t\tHisto\t\tHisto_shared\n");
         for (int i = 0; i < Q; i++)
         {
-            printf("%d: %d\n", i, histo[i]);
+            printf("%d\t->\t%d\n", i, histo[i]);
         }
         printf("\n\n");
     }
