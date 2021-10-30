@@ -4,7 +4,7 @@
 CC=gcc
 NCC=nvcc
 CCFLAGS=-Wall -lm -fopenmp
-CUDAFLAGS= -lcuda -lcudart
+CUDAFLAGS= -lcuda -lcudart -arch all-major -Wno-deprecated-gpu-targets
 SRC=src
 INCL=incl
 CUDAINCL=/usr/local/cuda/include
@@ -66,4 +66,7 @@ $(SRC)/%.o: $(SRC)/%.cu $(INCL)/%.h
 clean:
 	@echo "Eliminado $(WARN_COLOR).o $(NO_COLOR)y $(WARN_COLOR)$(EXECUTABLE_NAME) $(NO_COLOR) antiguos..."
 	rm -f $(SRC)/*.o $(EXECUTABLE_NAME) *.o
+
+run:
+	./hist -i img1lab3-1151x976.raw -o output.txt -m 1151 -n 976 -t 900 -d 0
 
